@@ -1,0 +1,85 @@
+{
+  "network": {
+    "nodes": 16,
+    "arcs": 50,
+    "od_pairs": 28,
+    "total_demand_MT": 435
+  },
+  "cost_optimal": {
+    "Z1_crore": 99614.0,
+    "Z2_MtCO2": 10.2202,
+    "Z1_flow_crore": 64201.0,
+    "Z1_transship_crore": 9733.0,
+    "Z1_backhaul_crore": 25680.0
+  },
+  "emission_optimal": {
+    "Z1_crore": 115001.0,
+    "Z2_MtCO2": 9.3355
+  },
+  "tradeoff": {
+    "cost_penalty_pct": 15.45,
+    "emission_saving_pct": 8.66
+  },
+  "pareto": [
+    {
+      "Z1_crore": 115001.0,
+      "Z2_MtCO2": 9.3355
+    },
+    {
+      "Z1_crore": 106804.0,
+      "Z2_MtCO2": 9.4159
+    },
+    {
+      "Z1_crore": 104000.0,
+      "Z2_MtCO2": 9.4963
+    },
+    {
+      "Z1_crore": 103112.0,
+      "Z2_MtCO2": 9.5768
+    },
+    {
+      "Z1_crore": 102284.0,
+      "Z2_MtCO2": 9.6572
+    },
+    {
+      "Z1_crore": 101565.0,
+      "Z2_MtCO2": 9.7376
+    },
+    {
+      "Z1_crore": 100951.0,
+      "Z2_MtCO2": 9.818
+    },
+    {
+      "Z1_crore": 100636.0,
+      "Z2_MtCO2": 9.8985
+    },
+    {
+      "Z1_crore": 100380.0,
+      "Z2_MtCO2": 9.9789
+    },
+    {
+      "Z1_crore": 100125.0,
+      "Z2_MtCO2": 10.0593
+    },
+    {
+      "Z1_crore": 99869.0,
+      "Z2_MtCO2": 10.1397
+    },
+    {
+      "Z1_crore": 99614.0,
+      "Z2_MtCO2": 10.2202
+    }
+  ],
+  "heuristic": {
+    "optimal": {
+      "Z1": 996141200000.0,
+      "Z2": 10220150500.0
+    },
+    "greedy": {
+      "Z1": 1097993400000.0,
+      "Z2": 11210743000.0
+    },
+    "cost_gap_pct": 10.22,
+    "emission_gap_pct": 9.69
+  }
+}
