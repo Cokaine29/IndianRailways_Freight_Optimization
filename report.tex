@@ -1,0 +1,722 @@
+% ============================================================
+% CE 749 — Project Report Template
+% Bi-Objective MCF for Indian Railway Freight Allocation
+% Indian Institute of Technology Bombay
+% ============================================================
+
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ─────────────────────────────────────────────────
+\usepackage[a4paper, top=0.8in, bottom=0.8in, left=1in, right=1in]{geometry}
+\usepackage{times}                      % Times New Roman font
+\usepackage{setspace}                   % Line spacing
+\usepackage{titlesec}                   % Section heading formatting
+\usepackage{fancyhdr}                   % Header and footer
+\usepackage{graphicx}                   % Figures
+\usepackage{float}                      % Figure placement [H]
+\usepackage{caption}                    % Caption formatting
+\usepackage{subcaption}                 % Subfigures
+\usepackage{booktabs}                   % Professional tables
+\usepackage{array}                      % Table column formatting
+\usepackage{longtable}                  % Multi-page tables
+\usepackage{multirow}                   % Merged table rows
+\usepackage{amsmath}                    % Math equations
+\usepackage{amssymb}                    % Math symbols
+\usepackage{mathtools}                  % Extended math
+\usepackage{bm}                         % Bold math
+\usepackage{algorithm}                  % Algorithm block
+\usepackage{algpseudocode}              % Pseudocode
+\usepackage[hidelinks]{hyperref}        % Clickable links (no red boxes)
+\usepackage{url}                        % URL formatting
+\usepackage[numbers, sort&compress]{natbib}   % Bibliography
+\usepackage{enumitem}                   % List formatting
+\usepackage{xcolor}                     % Colours
+\usepackage{tikz}                       % Diagrams
+\usepackage{pgfplots}                   % Plots in LaTeX
+\pgfplotsset{compat=1.18}
+\usepackage{indentfirst}                % Indent first paragraph
+\usepackage{parskip}                    % Paragraph spacing
+
+% ── Colours ──────────────────────────────────────────────────
+\definecolor{iitbblue}{RGB}{0, 75, 135}
+\definecolor{darkgray}{RGB}{80, 80, 80}
+\definecolor{lightgray}{RGB}{240, 240, 240}
+
+% ── Page Layout ──────────────────────────────────────────────
+\setstretch{1.5}                        % 1.5 line spacing
+\setlength{\parindent}{0.5cm}
+\setlength{\parskip}{6pt}
+
+% ── Section Heading Styles ───────────────────────────────────
+\titleformat{\section}
+  {\normalfont\fontsize{14}{17}\bfseries\color{iitbblue}}
+  {\thesection}{1em}{}
+  [\titlerule]
+
+\titleformat{\subsection}
+  {\normalfont\fontsize{12}{15}\bfseries}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\fontsize{12}{15}\bfseries\itshape}
+  {\thesubsubsection}{1em}{}
+
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{10pt}{4pt}
+
+% ── Header / Footer ──────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\textit{CE 749 : Freight Transportation Planning and Logistics}}
+\fancyhead[R]{\small\textit{IIT Bombay}}
+\fancyfoot[C]{\small\thepage}
+
+% ── Caption Formatting ───────────────────────────────────────
+\captionsetup{
+  font=small,
+  labelfont=bf,
+  labelsep=period,
+  justification=centering
+}
+
+% ── Equation Numbering by Section ────────────────────────────
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+
+% ── Hyperlink Setup ──────────────────────────────────────────
+\hypersetup{
+    pdftitle={CE749 Project Report},
+    pdfauthor={Niraj — 25M1528},
+    colorlinks=false
+}
+
+% ============================================================
+%  DOCUMENT BEGINS
+% ============================================================
+\begin{document}
+
+% ── Title Page ───────────────────────────────────────────────
+\begin{titlepage}
+    \begin{center}
+        \vspace*{0.5cm}
+
+        {\Large \textbf{Indian Institute of Technology Bombay}} \\[0.3cm]
+        
+        \rule{\linewidth}{0.5pt} \\[0.5cm]
+
+        {\large\textit{CE 749 : Freight Transportation Planning and Logistics}} \\[0.3cm]
+        {\large \textit{Course Project Report}} \\[1.5cm]
+
+        {\LARGE \textbf{Bi-Objective Optimization of Freight Allocation}} \\[0.4cm]
+        {\LARGE \textbf{on the Indian Railway Network}} \\[0.8cm]
+        {\Large \textbf{(A Multi-Commodity Flow Approach with}} \\[0.3cm]
+        {\Large \textbf{Transshipment, Backhaul, and Green Routing)}} \\[2.0cm]
+
+        \rule{\linewidth}{0.5pt} \\[0.8cm]
+
+        \begin{tabular}{rl}
+            \textbf{Submitted by:}  & Niraj  \\
+            \textbf{Roll No:}       & 25M1528 \\
+            \textbf{Submitted to:}  & Prof. Gopal Patil \\
+            \textbf{Semester:}          & Spring 2026 \\
+        \end{tabular} \\[2.0cm]
+
+        \rule{\linewidth}{0.5pt}
+
+        \vfill
+        {\small Indian Institute of Technology Bombay, Powai, Mumbai -- 400076}
+    \end{center}
+\end{titlepage}
+
+% ── Abstract ─────────────────────────────────────────────────
+\newpage
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\begin{abstract}
+\addcontentsline{toc}{section}{Abstract}
+\noindent
+Indian Railways transported 1,509~MT of freight in FY~2022-23, with the Golden
+Quadrilateral corridor carrying 55\% of this volume over just 16\% of total route
+length. The recent commissioning of the Eastern and Western Dedicated Freight Corridors
+has introduced fully electrified, high-capacity alternatives alongside existing diesel
+conventional lines, creating a structural conflict between cost minimisation and
+CO\textsubscript{2} emission reduction in freight routing decisions.
+
+This report formulates a \textbf{Bi-Objective Multi-Commodity Flow Linear Program
+(MCF-LP)} for annual freight allocation on the Indian Railways Golden Quadrilateral
+network. The model routes four commodity types — Coal, Cement, Foodgrains, and
+Fertilizers — across a 16-node, 50-arc network representing the GQ and its diagonals,
+with a total annual demand of 435~MT across 28 origin-destination pairs. Three
+operationally realistic features distinguish the formulation from standard MCF models:
+(i)~transshipment costs at all 12 intermediate junction nodes capturing marshalling yard
+detention charges; (ii)~empty wagon backhaul repositioning costs modelled as a linear
+auxiliary objective component; and (iii)~traction-differentiated emission factors
+(electric: 0.010~kgCO\textsubscript{2}/tonne-km; diesel: 0.035~kgCO\textsubscript{2}/tonne-km)
+sourced from the India Default GHG Emission Values report (SFC India, 2025). The two
+objectives — total logistics cost ($Z_1$) and total CO\textsubscript{2} emissions
+($Z_2$) — are optimised simultaneously using the \textbf{epsilon-constraint method},
+which generates a 12-point Pareto frontier.
+
+Results show that the emission-optimal solution achieves an \textbf{8.66\% reduction
+in CO\textsubscript{2}} (from 10.22~Mt to 9.34~Mt) at a \textbf{cost premium of
+15.45\%} over the cost-optimal baseline of Rs~99,614~crore. Empty wagon backhaul repositioning accounts for \textbf{25.8\% of total
+logistics cost} — a component absent from standard single-term MCF formulations.
+A Greedy Shortest Path heuristic benchmark shows that naive routing produces solutions
+that cost \textbf{10.22\% more} and emit \textbf{9.69\% more} CO\textsubscript{2} than the MCF-LP optimum, confirming
+the value of formal optimisation for both cost and environmental performance. Sensitivity analysis
+identifies diesel arc capacity of 70~MT as the binding constraint threshold, beyond
+which cost plateaus completely. The carbon price breakeven is estimated at
+Rs~1,73,930/tonne~CO\textsubscript{2}, providing a concrete threshold for green routing
+policy on Indian Railways.
+
+\end{abstract}
+
+\vspace{1cm}
+
+\noindent\textbf{Keywords:} Multi-commodity flow, bi-objective optimization, Indian Railways, 
+epsilon-constraint, green freight, transshipment, backhaul, Pareto frontier, 
+Golden Quadrilateral, CO\textsubscript{2} emissions.
+
+% ── Table of Contents ────────────────────────────────────────
+\newpage
+\tableofcontents
+
+\newpage
+\listoffigures
+\listoftables
+
+% ── Main Body ────────────────────────────────────────────────
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% ============================================================
+\section{Introduction}
+\label{sec:intro}
+% ============================================================
+
+Indian Railways is one of the largest freight rail networks in the world, transporting
+1,509.10 million tonnes (MT) of goods in FY~2022-23 and generating freight revenue of
+Rs~1,60,158~crore \cite{iryearbook2023}. With a route network spanning over 67,000~km and
+a fleet of more than 3~lakh wagons, it serves as the circulatory system of India's
+industrial economy, moving coal to power plants, cement to construction sites,
+foodgrains through the Food Corporation of India supply chain, and fertilizers to
+agricultural distribution hubs across the country.
+
+Despite this scale, a critical planning challenge persists at the operational level: given
+a set of freight demands across multiple origin-destination (OD) pairs and multiple
+commodity types, \textit{how should freight be allocated across the railway network so as
+to minimise total logistics cost}? This question is the freight allocation problem — and it is not easy to solve. Every year, suboptimal routing decisions translate directly into
+unnecessary expenditure on longer hauls, avoidable marshalling yard detention charges,
+and inefficient empty wagon repositioning. Conversely, the growing policy emphasis on
+decarbonising freight transport introduces a second, competing objective: minimising
+CO\textsubscript{2} emissions. These two objectives are in structural conflict on the
+Indian Railways network, where lower-cost routes frequently pass through diesel-traction
+corridors that emit up to 3.5 times more CO\textsubscript{2} per tonne-kilometre than
+electrified alternatives \cite{sfcindia2025}.
+
+The Golden Quadrilateral (GQ) and its two diagonals connecting Delhi, Mumbai,
+Chennai, and Kolkata — form the backbone of Indian freight, carrying approximately 55\%
+of total national freight traffic over just 16\% of total route length \cite{dfccil2023}.
+Line capacity utilisation on key trunk routes of the GQ has consistently exceeded
+115--150\%, making it both the most critical and most congested part of the network.
+The recent commissioning of the Eastern Dedicated Freight Corridor (EDFC, 1,337~km) and
+the near-complete Western Dedicated Freight Corridor (WDFC, 1,506~km) has introduced
+fully electrified, high-capacity alternatives alongside existing diesel conventional
+lines. This creates a genuine and operationally significant cost-versus-emission tradeoff:
+the electric DFC routes are cleaner but carry higher per-tonne tariffs on longer
+alignments, while diesel corridors offer shorter routing at higher emission intensity.
+Determining the optimal allocation of freight between these competing corridors requires
+a formal bi-objective optimisation framework.
+
+The academic literature on freight routing has addressed Multi-Commodity Flow (MCF)
+problems extensively (see \cite{malladi2020} for a comprehensive review), and bi-objective
+green freight models have been studied in intermodal contexts \cite{demir2019}. However,
+several features that are critical to real-world Indian Railways planning are routinely
+absent from academic formulations. First, \textit{transshipment costs} — marshalling yard
+detention charges at intermediate junctions such as Nagpur, which is India's largest
+central freight junction — are rarely modelled explicitly. Second, \textit{empty wagon
+backhaul repositioning costs}, which arise when directional demand imbalances require
+empty wagons to be returned against the primary flow direction, are omitted from most
+formulations despite accounting for a substantial fraction of total logistics cost. Third,
+most academic studies use synthetic or aggregated demand data rather than real zonal
+traffic statistics. These omissions limit both the realism and the policy relevance of
+existing models for the Indian context.
+
+This report addresses these gaps by formulating and solving a \textbf{Bi-Objective
+Multi-Commodity Flow Linear Program (MCF-LP)} for annual freight allocation on the
+Indian Railways Golden Quadrilateral network. The model is applied to a 16-node,
+50-arc network representing the GQ and its diagonals, routing four major commodity
+types — Coal, Cement, Foodgrains, and Fertilizers — across 28 OD pairs with a total
+annual demand of 435~MT. The formulation incorporates (i)~real zone-wise OD demand
+derived from the IR Year Book~2022-23, (ii)~transshipment costs at all 12 intermediate
+junction nodes, (iii)~empty wagon backhaul repositioning costs modelled as a linear
+auxiliary, and (iv)~differentiated emission factors for electric and diesel traction
+consistent with the India-specific GHG emission values published by Smart Freight Centre
+India \cite{sfcindia2025}. The two objectives — total logistics cost and total
+CO\textsubscript{2} emissions — are optimised simultaneously using the
+\textbf{epsilon-constraint method}, which generates a 12-point Pareto frontier
+characterising the complete cost-emission tradeoff.
+
+Results show that the emission-optimal solution reduces CO\textsubscript{2} by
+\textbf{8.66\%} at a cost premium of \textbf{15.45\%} over the cost-optimal baseline of
+Rs~99,614~crore. Backhaul costs alone account for 25.8\% of total logistics cost — a
+finding with direct implications for IR's wagon utilisation policy. A Greedy Shortest
+Path heuristic benchmark demonstrates that naive routing produces solutions that cost 10.22\% more and emit
+9.69\% more than the MCF-LP optimum, confirming the practical value of formal
+optimisation. Sensitivity analysis identifies diesel arc capacity of 70~MT as the binding constraint threshold for the current demand profile.
+
+The remainder of this report is organised as follows. Section~\ref{sec:litrev} reviews
+the relevant literature on MCF, green freight, and railway routing models.
+Section~\ref{sec:data} describes the network data and commodity demand.
+Section~\ref{sec:formulation} presents the complete mathematical formulation.
+Section~\ref{sec:methodology} describes the solution methodology including the
+epsilon-constraint algorithm and greedy heuristic.
+Section~\ref{sec:results} presents and discusses all results.
+Section~\ref{sec:conclusions} concludes with policy implications and directions for
+future work.
+
+% ============================================================
+\section{Literature Review}
+\label{sec:litrev}
+The Multi-Commodity Network Flow (MCF) problem forms the methodological foundation of
+this work. This section reviews two directly relevant contributions that motivate the
+formulation and solution approach adopted here, followed by a summary of the research
+gap this work addresses.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Multi-Commodity Network Flow and Solution Methods}
+% ──────────────────────────────────────────────────────────────────────────────
+
+Malladi and Sowlati \cite{malladi2020} present a systematic review of 263 MCF
+publications spanning 2000--2019, identifying freight transportation planning as the
+dominant application domain. Two findings are directly relevant here. First, the
+epsilon-constraint method is among the most widely adopted approaches for generating
+Pareto frontiers in bi-objective MCF problems, preferred over weighted-sum methods
+because it recovers non-dominated solutions even when the frontier is non-convex.
+Second, the review observes that real-world MCF applications consistently benefit from
+incorporating operational costs beyond arc traversal — including terminal handling and
+repositioning — yet most academic formulations omit these for tractability. This
+directly motivates the transshipment and backhaul extensions in the present model.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Bi-Objective Green Freight Optimisation}
+% ──────────────────────────────────────────────────────────────────────────────
+
+Demir et al.\ \cite{demir2019} develop a bi-objective model for intermodal freight
+transportation minimising cost and CO\textsubscript{2} simultaneously across a European
+network. Using the epsilon-constraint method, they find that nearly 6\% of emissions can
+be eliminated at less than 1\% additional cost, but the full emission-optimal solution
+requires a cost premium of approximately 10\%. The present work finds a qualitatively
+similar Pareto structure on the Indian Railways network, with a steeper frontier
+(15.45\% premium for 8.66\% emission saving) reflecting the larger diesel-electric
+emission ratio (3.5$\times$) specific to India's traction mix. Unlike Demir et al.,
+the present model targets intra-rail traction mode choice rather than intermodal mode
+shifts, and explicitly incorporates transshipment and backhaul costs that together
+account for 35.6\% of total logistics cost.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Research Gap and Contribution}
+% ──────────────────────────────────────────────────────────────────────────────
+
+The two works above establish the MCF framework and epsilon-constraint method as
+appropriate for this problem, and confirm that operational cost components and
+emission differentiation are important model features. However, no published work
+applies these methods to Indian Railways specifically, nor simultaneously incorporates
+real zone-wise IR demand, junction transshipment costs, empty wagon backhaul, and
+traction-differentiated emission factors in a single bi-objective formulation.
+
+
+% ============================================================
+\section{Data and Network Description}
+\label{sec:data}
+% ============================================================
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Network Structure}
+% ──────────────────────────────────────────────────────────────────────────────
+
+The study network represents the Indian Railways Golden Quadrilateral and its two
+diagonals, which together carry approximately 55\% of total national rail freight over
+just 16\% of total route length \cite{dfccil2023}. The network consists of \textbf{16
+nodes}, \textbf{25 undirected corridors} (modelled as 50 directed arcs), and covers the
+major freight hubs, key junction cities, and industrial origin points of India. The four
+primary hubs — Delhi, Mumbai, Chennai, and Kolkata — form the vertices of the Golden
+Quadrilateral, while twelve additional nodes represent intermediate junctions,
+marshalling yards, and commodity origin/destination points.
+
+Four nodes beyond the standard Golden Quadrilateral are included to improve the
+realism of conflict routing. Raipur (node~13) represents the South East Central Railway
+zone and is the gateway to SECL coal mines (Korba, Gevra, Kusmunda) — the second
+largest coal producing cluster in India. Jamshedpur (node~14) anchors the eastern steel
+belt (Tata Steel, IISCO). Ludhiana (node~15) is the northern terminus of the Eastern
+Dedicated Freight Corridor (EDFC) and the primary FCI wheat procurement point for
+Punjab. Vizag (node~16) represents the Gangavaram and Visakhapatnam port complex, a
+major import and distribution point for fertilizers (IFFCO, Coromandel). The inclusion
+of these four nodes creates structurally important routing conflicts where the cheapest
+path and the lowest-emission path diverge — for instance, coal from Raipur to Delhi
+can travel via the short diesel Nagpur corridor or the longer but fully electrified
+route through Kolkata and the EDFC.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Arc Data and Traction Classification}
+% ──────────────────────────────────────────────────────────────────────────────
+
+Arc distances are sourced from the Indian Railways National Train Enquiry System (NTES)
+and represent station-to-station railway distances, not road or airline distances. Each
+of the 25 undirected corridors is classified as either \textit{electrified} or
+\textit{diesel} based on the IR Electrification Map 2023 published by the Ministry of
+Railways. As of FY~2022-23, approximately 82\% of the broad-gauge route length is
+electrified; the remaining diesel corridors are primarily secondary and cross-connecting
+lines.
+
+Arc capacity is differentiated by traction type, consistent with published DFCCIL
+traffic projections. Electrified DFC and trunk corridors are assigned a capacity of
+200~MT/year, reflecting the current operational capacity of the EDFC (which was designed
+for 153~MT in 2021-22 and is projected to reach 250~MT by 2036-37 \cite{railwaygazette2023}).
+Diesel corridors of length greater than 300~km are assigned 70~MT/year, and shorter
+diesel arcs are assigned 60~MT/year, consistent with actual utilisation data on
+secondary corridors reported in the IEEFA coal corridor analysis \cite{ieefa2023}.
+
+The traction classification is the primary source of the cost-emission conflict in the
+model. Diesel arcs are generally shorter — for example, Raipur to Nagpur is 280~km by
+diesel versus 620~km by the electrified route through Kolkata — making them cheaper
+per unit of demand routed. However, diesel traction emits 3.5 times more
+CO\textsubscript{2} per tonne-kilometre than electric traction, so the shorter, cheaper path is also the dirtier
+one. This structural conflict ensures that the Pareto frontier is non-trivial and that
+meaningful tradeoffs exist across all 12 generated solutions.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Commodity and Demand Data}
+% ──────────────────────────────────────────────────────────────────────────────
+
+Four commodity types are modelled: Coal, Cement, Foodgrains, and Fertilizers. These
+were selected because they collectively account for approximately 66\% of total Indian
+railway freight revenue in FY~2022-23 and represent the dominant freight streams on the
+Golden Quadrilateral \cite{iryearbook2023}. Each commodity uses a dedicated wagon type
+with distinct capacity and tariff characteristics.
+
+National originating traffic volumes are drawn directly from Table~3 of the Indian
+Railways Year Book 2022-23 \cite{iryearbook2023}. The case study demand for each
+commodity is derived from these national totals by applying zone-wise originating
+traffic proportions from the NITI Aayog IR Efficiency Report \cite{nitiayog2021},
+retaining the OD pairs that correspond to the major freight streams on the Golden
+Quadrilateral. The GQ corridor carries approximately 55\% of national freight
+\cite{dfccil2023}; the 16-node subnetwork modelled here captures approximately 79\% of
+that share for the four selected commodities, yielding a total case study demand of
+\textbf{435~MT/year} across 28~OD pairs.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Cost and Emission Parameters}
+\label{subsec:emission_params}
+% ──────────────────────────────────────────────────────────────────────────────
+
+\textbf{Freight Rates.} Commodity-specific freight rates are sourced from the Ministry
+of Railways official Goods Tariff notifications for FY~2022-23. The rates are:
+Coal~Rs~1.40/tonne-km, Foodgrains~Rs~1.20/tonne-km, Fertilizers~Rs~1.10/tonne-km, and
+Cement~Rs~0.90/tonne-km (flat rate introduced via PIB notification, November 2025 for
+bulk cement). The national average freight earning of Rs~1.60/tonne-km
+\cite{iryearbook2023} serves as a benchmark: all four commodity-specific rates fall
+below this average, consistent with essential commodity concessions in IR's tariff
+structure. The arc-level transportation cost for commodity $k$ on arc $(i,j)$ is
+computed as $c^k_{ij} = r^k \times 10^6 \times \ell_{ij}$, where the factor $10^6$
+converts the demand unit from MT to tonnes.
+
+\textbf{Emission Factors.} Traction-specific CO\textsubscript{2} emission intensities
+are sourced from the \textit{India Default GHG Emission Values~V1.0} published jointly
+by Smart Freight Centre India and the TCI-IIMB Supply Chain Sustainability Lab in
+May~2025 \cite{sfcindia2025}. This document derives emission intensities from five
+years of Indian Railways fuel consumption data (2015-16 to 2019-20) using the IPCC 2006
+methodology and the Central Electricity Authority's CO\textsubscript{2} Baseline
+Database for the Indian Power Sector (grid emission factor: 0.82~kgCO\textsubscript{2}/kWh
+in 2022-23). The emission factors used in this model are:
+
+\begin{itemize}
+    \item \textbf{Electric traction:} 0.010~kgCO\textsubscript{2}/tonne-km
+    \item \textbf{Diesel traction:} 0.035~kgCO\textsubscript{2}/tonne-km
+    \item \textbf{Ratio (diesel/electric):} 3.5$\times$
+\end{itemize}
+
+The 3.5$\times$ ratio is further corroborated by Mongabay India \cite{mongabay2025},
+which reports that diesel traction is approximately 3.05 times more expensive per
+gross tonne-kilometre than electric traction in freight operations — consistent with
+the emission intensity ratio given that fuel cost and carbon intensity are strongly
+correlated for combustion-based traction. An additional commodity-specific emission
+penalty multiplier is applied to account for differences in wagon aerodynamics and axle
+load: 1.25 for Coal (BOXN open wagons with higher drag), 1.05 for Cement (BCN bulk
+tankers), 0.88 for Foodgrains (BCNA covered wagons, most aerodynamic), and 1.00 for
+Fertilizers (BFNS covered hoppers, baseline). The arc-level emission per MT for
+commodity $k$ is thus $\varepsilon^k_{ij} = e_{ij} \times \ell_{ij} \times p^k \times
+10^6$, where $e_{ij}$ is the traction emission factor, $\ell_{ij}$ is arc distance, and
+$p^k$ is the commodity penalty.
+
+\textbf{Transshipment Costs.} Junction-level transshipment costs represent marshalling
+yard detention and shunting charges when freight passes through an intermediate node.
+These are sourced from the Indian Railways Goods Tariff (Section~4: Wharfage and
+Demurrage) and the NITI Aayog IR Efficiency Report \cite{nitiayog2021}. Nagpur, as
+India's largest central marshalling yard with the highest freight density and documented
+high wagon dwell times (CAI audit), is assigned the highest transshipment cost of
+Rs~180/tonne. Modern EDFC terminals such as Ludhiana are assigned the lowest cost of
+Rs~60/tonne, reflecting their purpose-built low-dwell-time infrastructure.
+
+% ============================================================
+\section{Mathematical Formulation}
+\label{sec:formulation}
+% ============================================================
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Sets and Indices}
+% ──────────────────────────────────────────────────────────────────────────────
+
+Let $\mathcal{N}$ denote the set of nodes, $\mathcal{A}$ the set of directed arcs,
+and $\mathcal{K}$ the set of commodities. For each commodity $k \in \mathcal{K}$,
+let $\mathcal{W}^k$ denote the set of origin-destination (OD) pairs with positive
+demand. In this study,
+$|\mathcal{N}| = 16$, $|\mathcal{A}| = 50$, $|\mathcal{K}| = 4$, and the total number
+of OD pairs across all commodities is 28.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Decision Variables}
+% ──────────────────────────────────────────────────────────────────────────────
+
+The primary decision variable $f^k_{ij}$ represents the flow of commodity $k$ on
+directed arc $(i,j)$, measured in MT:
+
+\begin{equation}
+    f^k_{ij} \geq 0 \quad \forall\, k \in \mathcal{K},\; (i,j) \in \mathcal{A}
+\end{equation}
+
+Two non-negative auxiliary variables are introduced to capture the two operational cost
+components beyond basic arc traversal:
+
+\begin{align}
+    t^k_i &\geq 0
+    \quad \text{(transshipment flow of commodity } k \text{ through intermediate node } i \text{)} \\
+    b^k_{ij} &\geq 0
+    \quad \text{(backhaul/empty wagon flow for commodity } k \text{ on arc } (i,j) \text{)}
+\end{align}
+
+The variable $t^k_i$ captures the volume of commodity $k$ that passes through node $i$
+without it being the origin or destination, and thereby incurs marshalling yard
+charges $\tau_i$. The variable $b^k_{ij}$ captures the net directional imbalance on
+each arc — the excess of loaded flow in one direction over the return flow, which must
+be repositioned as empty wagons at a fraction $\alpha$ of the loaded rate. Both
+auxiliary variables are linked to the primary flow variables through constraints.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Objective Functions}
+% ──────────────────────────────────────────────────────────────────────────────
+
+Two objectives are minimised simultaneously. \textbf{Objective~1} minimises total
+logistics cost $Z_1$ (in Rs), decomposed into three components:
+
+\begin{equation}
+    \min\; Z_1 =
+    \underbrace{\sum_{k \in \mathcal{K}} \sum_{(i,j) \in \mathcal{A}} c^k_{ij} \cdot f^k_{ij}}_{\text{Arc flow cost}}
+    + \underbrace{\sum_{k \in \mathcal{K}} \sum_{i \in \mathcal{N}} \tau_i \cdot t^k_i}_{\text{Transshipment cost}}
+    + \underbrace{\sum_{k \in \mathcal{K}} \sum_{(i,j) \in \mathcal{A}}
+      \alpha \cdot r^k \cdot 10^6 \cdot \ell_{ij} \cdot b^k_{ij}}_{\text{Backhaul cost}}
+    \label{eq:Z1}
+\end{equation}
+
+The first term is the standard arc flow cost — i.e. freight tariff multiplied by distance
+and volume. The second term aggregates marshalling yard charges at all intermediate
+junction nodes. The third term prices empty wagon repositioning at 40\% ($\alpha = 0.4$)
+of the loaded freight rate, consistent with the IR empty wagon repositioning scheme
+\cite{iryearbook2023}. In the cost-optimal solution, these three components contribute
+64.4\%, 9.8\%, and 25.8\% of $Z_1$ respectively, confirming that backhaul and
+transshipment together constitute over one-third of total logistics cost — a
+proportion that would be entirely missed by a standard single-term MCF objective.
+
+\textbf{Objective~2} minimises total CO\textsubscript{2} emissions $Z_2$ (in
+kgCO\textsubscript{2}):
+
+\begin{equation}
+    \min\; Z_2 = \sum_{k \in \mathcal{K}} \sum_{(i,j) \in \mathcal{A}}
+    \varepsilon^k_{ij} \cdot f^k_{ij}
+    \label{eq:Z2}
+\end{equation}
+
+Since emissions depend only on traction type, distance, and flow volume — and not on
+transshipment or backhaul — $Z_2$ is a purely arc-based objective. The structural
+tension between $Z_1$ and $Z_2$ arises because the arcs that minimise $Z_1$ (short
+diesel corridors with low $c^k_{ij}$) are precisely the arcs with the highest
+$\varepsilon^k_{ij}$, and vice versa.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Constraints}
+% ──────────────────────────────────────────────────────────────────────────────
+
+The model enforces five constraint types.
+
+\textbf{(C1) Flow Conservation} ensures that for every commodity $k$ and every node
+$i$, net outflow equals net demand:
+
+\begin{equation}
+    \sum_{j:\,(i,j)\in\mathcal{A}} f^k_{ij} \;-\;
+    \sum_{j:\,(j,i)\in\mathcal{A}} f^k_{ji}
+    = \begin{cases}
+        d^k_{od} & \text{if } i = o \;\text{(origin)} \\
+        -d^k_{od} & \text{if } i = d \;\text{(destination)} \\
+        0 & \text{otherwise (intermediate)}
+    \end{cases}
+    \quad \forall\, i \in \mathcal{N},\; k \in \mathcal{K}
+    \label{eq:conservation}
+\end{equation}
+
+This constraint enforces that all demand is satisfied with no flow lost or created
+at intermediate nodes. 
+
+\textbf{(C2) Arc Capacity} limits the aggregate flow across all commodities on each arc
+to its physical capacity:
+
+\begin{equation}
+    \sum_{k \in \mathcal{K}} f^k_{ij} \leq u_{ij}
+    \quad \forall\, (i,j) \in \mathcal{A}
+    \label{eq:capacity}
+\end{equation}
+
+Capacity is shared across commodities, reflecting the physical reality that different
+wagon types compete for line capacity on the same corridor. 
+
+\textbf{(C3) Transshipment Linking} connects the auxiliary variable $t^k_i$ to the
+primary flow:
+
+\begin{equation}
+    t^k_i \;\geq\;
+    \sum_{j:\,(j,i)\in\mathcal{A}} f^k_{ji} + \text{net}^k_i
+    \quad \forall\, i \in \mathcal{N},\; k \in \mathcal{K}
+    \label{eq:transship}
+\end{equation}
+
+where $\text{net}^k_i$ is the net demand at node $i$ for commodity $k$ (positive at
+origin, negative at destination, zero at intermediate nodes). This constraint ensures
+that $t^k_i$ captures all inbound flow at a node that is subsequently forwarded
+onwards, activating the transshipment charge $\tau_i$ in the objective.
+
+\textbf{(C4) Backhaul} links $b^k_{ij}$ to the directional flow imbalance on each arc:
+
+\begin{equation}
+    b^k_{ij} \;\geq\; f^k_{ij} - f^k_{ji}
+    \quad \forall\, (i,j) \in \mathcal{A},\; k \in \mathcal{K}
+    \label{eq:backhaul}
+\end{equation}
+
+Since the objective minimises $b^k_{ij}$, at optimality $b^k_{ij}$ takes the value
+$\max(0,\, f^k_{ij} - f^k_{ji})$, which is the net loaded flow in the $(i,j)$
+direction that cannot be offset by return flow. This is exactly the volume of empty
+wagons that must be repositioned from $j$ back to $i$.
+
+\textbf{(C5) Non-negativity} ensures physical feasibility of all flows:
+
+\begin{equation}
+    f^k_{ij} \geq 0, \quad t^k_i \geq 0, \quad b^k_{ij} \geq 0
+    \quad \forall\, k \in \mathcal{K},\; (i,j) \in \mathcal{A},\; i \in \mathcal{N}
+    \label{eq:nonneg}
+\end{equation}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\subsection{Bi-Objective Solution: Epsilon-Constraint Method}
+\label{subsec:epsilon}
+% ──────────────────────────────────────────────────────────────────────────────
+
+Since $Z_1$ and $Z_2$ are conflicting objectives, there is no single optimal solution
+but rather a Pareto frontier of non-dominated solutions. To generate this frontier, we
+employ the $\epsilon$-constraint method. The method involves retaining one objective
+(cost $Z_1$) as the primary function to minimise, while converting the other objective
+(emissions $Z_2$) into a hard constraint $Z_2 \leq \epsilon$.
+
+By systematically varying the value of $\epsilon$ between $Z_2^{min}$ and $Z_2^{max}$,
+we trace out the complete tradeoff curve, yielding 12 discrete Pareto-efficient points.
+
+% ============================================================
+\section{Results and Discussion}
+\label{sec:results}
+% ============================================================
+
+\subsection{LP Optimal vs. Current Practice (Baseline)}
+To quantify the value of the optimization model, it was benchmarked against a \textbf{Greedy Shortest Path Heuristic}, which mirrors the current decentralized dispatching practices of Indian Railways zones (routing freight on the cheapest individual path without global capacity consideration).
+
+\begin{table}[H]
+    \centering
+    \caption{Performance Comparison: Greedy Heuristic vs MCF-LP Optimal}
+    \label{tab:heuristic_gap}
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Metric} & \textbf{Current Practice (Greedy)} & \textbf{Proposed (MCF-LP)} & \textbf{Improvement} \\
+        \midrule
+        \textbf{Total Cost} & Rs 1,09,799 Crore & \textbf{Rs 99,614 Crore} & \textbf{10.22\% (Rs 10,185 Cr saved)} \\
+        \textbf{Emissions} & 11.21 Mt-CO\textsubscript{2} & \textbf{10.22 Mt-CO\textsubscript{2}} & \textbf{9.69\% (0.99 Mt-CO\textsubscript{2} saved)} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The exact LP optimization significantly outperforms heuristic routing, simultaneously saving over Rs 10,000 Crore annually and eliminating nearly 1 Million Tonnes of CO\textsubscript{2}.
+
+\subsection{The Hidden Cost of Backhaul}
+
+Decomposing the cost-optimal objective value ($Z_1 = 99,614$ Crore) reveals a critical structural insight:
+\begin{itemize}
+    \item \textbf{Arc Flow (Tariff):} Rs 64,201 Crore (64.4\%)
+    \item \textbf{Backhaul (Empty Wagons):} Rs 25,680 Crore (25.8\%)
+    \item \textbf{Transshipment (Yards):} Rs 9,733 Crore (9.8\%)
+\end{itemize}
+
+Empty wagon repositioning accounts for \textbf{more than one-fourth} of the total logistics cost. Traditional single-objective models that ignore backhaul severely misrepresent the true cost of rail freight.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{outputs/fig5_cost_breakdown.png}
+    \caption{Total Cost Breakdown in the Cost-Optimal Solution.}
+    \label{fig:cost_breakdown}
+\end{figure}
+
+\subsection{The Cost-Emission Tradeoff (Pareto Frontier)}
+
+The $\epsilon$-constraint method generated 12 unique Pareto-efficient solutions ranging from the cost-optimal extreme to the emission-optimal extreme.
+
+\begin{itemize}
+    \item \textbf{Cost-Optimal Solution:} Rs 99,614 Crore | 10.22 Mt-CO\textsubscript{2}
+    \item \textbf{Emission-Optimal Solution:} Rs 1,15,001 Crore | 9.34 Mt-CO\textsubscript{2}
+\end{itemize}
+
+Indian Railways can achieve an \textbf{8.66\% reduction in emissions} by incurring a \textbf{15.45\% cost premium}. This quantifies the "price of green." The implied \textbf{Carbon Breakeven Price} is \textbf{Rs 1,73,930 per tonne of CO\textsubscript{2}}. Below this carbon tax threshold, cost-optimal routing remains strictly cheaper than green routing.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{outputs/fig1_pareto_frontier.png}
+    \caption{Pareto Frontier showing the tradeoff between Cost and Emissions.}
+    \label{fig:pareto}
+\end{figure}
+
+\subsection{Flow Rerouting Behavior}
+
+The difference between the cost-optimal and emission-optimal routing demonstrates how the network adapts to the emission constraint. The model heavily reroutes flows from the central diesel corridors (e.g., Raipur $\rightarrow$ Bhopal) to the electrified peripheral corridors (e.g., Kolkata $\rightarrow$ Kanpur on the EDFC), absorbing the higher travel distance to eliminate the diesel emission penalty.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{outputs/fig6_flow_comparison.png}
+    \caption{Flow rerouting on major arcs comparing Cost-Optimal and Emission-Optimal solutions.}
+    \label{fig:flow_comparison}
+\end{figure}
+
+\subsection{Sensitivity Analysis: Diesel Capacity}
+Sensitivity analysis on diesel arc capacities demonstrated that tightening diesel capacity below 70~MT forces traffic onto longer electrified routes, sharply increasing costs. At 70~MT, the system operates at an inflection point where cost efficiency is maximized without aggressively restricting flows. 
+
+% ============================================================
+\section{Conclusions}
+\label{sec:conclusions}
+% ============================================================
+
+This project successfully developed and implemented a Bi-Objective Multi-Commodity Flow model for the Indian Railways Golden Quadrilateral network. The key contributions include:
+
+1. Proving that centralized LP optimization saves \textbf{10.22\% in costs} and \textbf{9.69\% in emissions} over current heuristic dispatching.
+2. Uncovering that \textbf{empty wagon backhaul accounts for 25.8\% of logistics costs}, highlighting the need for better rake repositioning strategies.
+3. Quantifying the exact tradeoff for decarbonization, showing that an 8.66\% emission cut requires a 15.45\% cost increase, providing policymakers with a precise \textbf{Rs 1.74 Lakh/tCO\textsubscript{2} carbon breakeven price} to justify future electrification investments. 
+
+\end{document}
