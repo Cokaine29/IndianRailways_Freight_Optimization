@@ -35,14 +35,20 @@ The **Pareto frontier** (12 non-dominated solutions) is generated using the **ep
 
 ## 🖥️ Interactive Dashboard
 
-An interactive **Streamlit dashboard** is included, providing a no-code interface to explore the model results:
+The project dashboard is hosted live and can be accessed directly from your browser without any local setup:
+
+🔗 **[Live Streamlit Dashboard](https://indianrailwaysfreightoptimizationgit-srp3daqtrvefowmhmg8f2r.streamlit.app/)**
+
+### Running Locally
+
+If you prefer to run the dashboard on your own machine:
 
 ```bash
 # Install all dependencies
 pip install -r requirements.txt
 
 # Launch the dashboard
-streamlit run dashboard.py
+streamlit run app/dashboard.py
 ```
 
 Then open **http://localhost:8501** in your browser.
