@@ -4,20 +4,20 @@ import os, sys, json, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-from data import NODES, COMMODITIES, DEMAND, ARCS, RAKE_CAPACITY
-from model import build_and_solve, generate_pareto_frontier
-from heuristic import run_heuristic_comparison
-from visualize import (plot_pareto_frontier, plot_flow_distribution,
-                       plot_heuristic_comparison, plot_sensitivity,
-                       plot_cost_breakdown, plot_flow_comparison)
-from network_map import plot_network_flows
+from src.data import NODES, COMMODITIES, DEMAND, ARCS, RAKE_CAPACITY
+from src.model import build_and_solve, generate_pareto_frontier
+from src.heuristic import run_heuristic_comparison
+from src.visualize import (plot_pareto_frontier, plot_flow_distribution,
+                           plot_heuristic_comparison, plot_sensitivity,
+                           plot_cost_breakdown, plot_flow_comparison)
+from src.network_map import plot_network_flows
 
 os.makedirs("outputs", exist_ok=True)
 
 def hdr(t): print("\n"+"="*65+f"\n  {t}\n"+"="*65)
 
 def print_flows(flows):
-    from data import NODES as N
+    from src.data import NODES as N
     print(f"\n  {'Commodity':<14} {'Arc':<35} {'Flow (MT)':>10}")
     print("  "+"-"*61)
     for k,arcs in flows.items():
@@ -34,7 +34,7 @@ def print_costs(result, label):
     print(f"    Emissions (Z2):    {result['Z2']/1e9:>10.4f} Mt-CO2")
 
 def sensitivity_capacity():
-    import data as D
+    import src.data as D
     hdr("STEP 5a — SENSITIVITY: Diesel Arc Capacity")
     base = {arc: D.ARC_CAPACITY[arc] for arc in D.ARCS}
     diesel_caps = [40, 50, 60, 70, 80, 90, 100]
@@ -55,7 +55,7 @@ def sensitivity_capacity():
     return results
 
 def sensitivity_nagpur():
-    import data as D
+    import src.data as D
     hdr("STEP 5b — SENSITIVITY: Nagpur Transshipment Cost")
     base = D.TRANSSHIPMENT_COST[5]
     costs = [0, 60*1e6, 120*1e6, 180*1e6, 240*1e6, 300*1e6, 400*1e6]

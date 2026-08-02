@@ -37,7 +37,7 @@ def plot_pareto_frontier(pts, comparison=None):
     print(f"  Saved: {p}"); return p
 
 def plot_flow_distribution(flows, suffix="Cost-Optimal"):
-    from data import NODES
+    from src.data import NODES
     fig, axes = plt.subplots(2,2,figsize=(14,10)); axes=axes.flatten()
     for idx,k in enumerate([1,2,3,4]):
         ax=axes[idx]; fk=flows.get(k,{})
@@ -127,7 +127,7 @@ def plot_cost_breakdown(res):
     return p
 
 def plot_flow_comparison(cost_opt, emis_opt):
-    from data import NODES
+    from src.data import NODES
     fig, ax = plt.subplots(figsize=(10, 6))
     
     c_flow = {}

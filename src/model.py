@@ -1,6 +1,6 @@
 # CE 749 — model.py FINAL: MCF-MIP with Transshipment + Backhaul
 import pulp, numpy as np
-from data import (NODES, COMMODITIES, ARCS, ARC_DISTANCES, FREIGHT_RATE,
+from src.data import (NODES, COMMODITIES, ARCS, ARC_DISTANCES, FREIGHT_RATE,
                   COST, EMISSION, ARC_CAPACITY, DEMAND,
                   TRANSSHIPMENT_COST, BACKHAUL_FRACTION, RAKE_CAPACITY)
 

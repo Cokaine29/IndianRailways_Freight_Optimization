@@ -1,6 +1,6 @@
 # CE 749 — heuristic.py: Greedy Shortest Path Benchmark
 import heapq
-from data import NODES, COMMODITIES, ARCS, COST, EMISSION, DEMAND, TRANSSHIPMENT_COST, BACKHAUL_FRACTION, FREIGHT_RATE, ARC_DISTANCES
+from src.data import NODES, COMMODITIES, ARCS, COST, EMISSION, DEMAND, TRANSSHIPMENT_COST, BACKHAUL_FRACTION, FREIGHT_RATE, ARC_DISTANCES
 
 def dijkstra(source, weights):
     dist = {n: float('inf') for n in NODES}

@@ -42,7 +42,7 @@ CNAME = {1:"Coal", 2:"Cement", 3:"Foodgrains", 4:"Fertilizers"}
 
 def plot_network_flows(cost_flows, emis_flows):
     """Plot side-by-side network maps: cost-optimal vs emission-optimal flows"""
-    from data import ARC_TRACTION
+    from src.data import ARC_TRACTION
 
     fig, axes = plt.subplots(1, 2, figsize=(18, 10))
     fig.patch.set_facecolor('#F8F9FA')

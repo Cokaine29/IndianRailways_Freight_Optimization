@@ -19,11 +19,11 @@ import sys
 import os
 os.makedirs("outputs", exist_ok=True)
 
-from model import build_and_solve, generate_pareto_frontier
-from heuristic import run_heuristic_comparison
-from visualize import (plot_pareto_frontier, plot_flow_distribution,
+from src.model import build_and_solve, generate_pareto_frontier
+from src.heuristic import run_heuristic_comparison
+from src.visualize import (plot_pareto_frontier, plot_flow_distribution,
                        plot_heuristic_comparison, plot_sensitivity)
-from network_map import plot_network_flows
+from src.network_map import plot_network_flows
 
 # ─── Figure 0: Network Map ────────────────────────────────────────────────────
 def make_fig0():
@@ -85,7 +85,7 @@ def make_fig4():
     Sensitivity of optimal cost and emissions to diesel arc capacity (MT).
     Shows the binding constraint threshold and cost plateau.
     """
-    import data as D
+    import src.data as D
     print("Generating fig4: Sensitivity analysis...")
     base = {arc: D.ARC_CAPACITY[arc] for arc in D.ARCS}
     diesel_caps = [40, 50, 60, 70, 80, 90, 100]
@@ -113,7 +113,7 @@ def make_fig5():
     Pie chart showing the breakdown of total cost into arc flow, transshipment,
     and backhaul costs.
     """
-    from visualize import plot_cost_breakdown
+    from src.visualize import plot_cost_breakdown
     print("Generating fig5: Cost breakdown...")
     cost_opt = build_and_solve(objective="cost", use_mip=False)
     plot_cost_breakdown(cost_opt)
@@ -124,7 +124,7 @@ def make_fig6():
     Horizontal bar chart showing arcs with significant flow differences
     between cost-optimal and emission-optimal solutions.
     """
-    from visualize import plot_flow_comparison
+    from src.visualize import plot_flow_comparison
     print("Generating fig6: Flow comparison...")
     cost_opt = build_and_solve(objective="cost", use_mip=False)
     emis_opt = build_and_solve(objective="emission", use_mip=False)

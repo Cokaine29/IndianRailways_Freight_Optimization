@@ -3,8 +3,9 @@
 # Run with: streamlit run dashboard.py
 
 import os, sys
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(PROJECT_ROOT)
+sys.path.insert(0, PROJECT_ROOT)
 
 import streamlit as st
 import plotly.graph_objects as go
@@ -187,40 +188,40 @@ COLORS = {
 }
 
 # ── Data imports ─────────────────────────────────────────────────────────────
-from data import NODES, COMMODITIES, ARCS, ARC_TRACTION, ARC_DISTANCES, DEMAND
+from src.data import NODES, COMMODITIES, ARCS, ARC_TRACTION, ARC_DISTANCES, DEMAND
 
 # ── Cached solver calls ───────────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
 def get_cost_optimal():
-    from model import build_and_solve
+    from src.model import build_and_solve
     return build_and_solve(objective="cost", use_mip=False)
 
 @st.cache_data(show_spinner=False)
 def get_emis_optimal():
-    from model import build_and_solve
+    from src.model import build_and_solve
     return build_and_solve(objective="emission", use_mip=False)
 
 @st.cache_data(show_spinner=False)
 def get_pareto():
-    from model import generate_pareto_frontier
+    from src.model import generate_pareto_frontier
     pareto, c, e = generate_pareto_frontier(n_points=12, use_mip=False)
     return pareto, c, e
 
 @st.cache_data(show_spinner=False)
 def get_heuristic(cost_opt_z1, cost_opt_z2):
-    from heuristic import run_heuristic_comparison
+    from src.heuristic import run_heuristic_comparison
     cost_opt = get_cost_optimal()
     return run_heuristic_comparison(cost_opt)
 
 @st.cache_data(show_spinner=False)
 def solve_epsilon(epsilon_val):
-    from model import build_and_solve
+    from src.model import build_and_solve
     return build_and_solve(epsilon=epsilon_val * 1e9, objective="cost", use_mip=False)
 
 @st.cache_data(show_spinner=False)
 def get_sensitivity():
-    import data as D
-    from model import build_and_solve
+    import src.data as D
+    from src.model import build_and_solve
     base = {arc: D.ARC_CAPACITY[arc] for arc in D.ARCS}
     results = []
     for cap in [40, 50, 60, 70, 80, 90, 100]:
