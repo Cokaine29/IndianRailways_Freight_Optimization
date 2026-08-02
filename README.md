@@ -1,4 +1,4 @@
-# CE 749 — Bi-Objective Freight Allocation Optimization
+# CE 749 : Bi-Objective Freight Allocation Optimization
 ## Indian Railways Golden Quadrilateral Network
 
 ![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
