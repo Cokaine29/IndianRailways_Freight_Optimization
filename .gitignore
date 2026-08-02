@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 # Output directory
-outputs/
+# outputs/
 
 # Virtual environments
 venv/
@@ -14,3 +14,8 @@ env/
 # IDEs
 .vscode/
 .idea/
+
+# Personal files
+1784188019634_All_Senior_Resumes.md
+resume_project_guidelines.md
+
