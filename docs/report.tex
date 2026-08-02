@@ -708,6 +708,59 @@ The difference between the cost-optimal and emission-optimal routing demonstrate
 \subsection{Sensitivity Analysis: Diesel Capacity}
 Sensitivity analysis on diesel arc capacities demonstrated that tightening diesel capacity below 70~MT forces traffic onto longer electrified routes, sharply increasing costs. At 70~MT, the system operates at an inflection point where cost efficiency is maximized without aggressively restricting flows. 
 
+
+% ============================================================
+\section{Assumptions and Limitations}
+\label{sec:assumptions}
+% ============================================================
+
+Every model is a simplification of reality. The following assumptions were made explicitly and should be understood when interpreting the results.
+
+\subsection{Model Assumptions}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{A\arabic*.}]
+
+    \item \textbf{Annual planning horizon.}
+    All decision variables represent annual aggregate flows (MT/year), not daily or seasonal schedules. This is appropriate for strategic freight allocation; seasonal variation in bulk commodity demand is within $\pm 15\%$ of the annual mean (IR Year Book 2022-23).
+
+    \item \textbf{Continuous flow relaxation (LP, not MIP).}
+    The decision variable $f_{k,ij}$ is continuous. Since 1~MT $\approx 285$ rakes, the rounding error from the LP relaxation is $< 0.4\%$. This is standard practice for strategic-level MCF models \cite{malladi2020}.
+
+    \item \textbf{Static and deterministic demand.}
+    The OD demand matrix is fixed at 2022-23 values. Demand uncertainty is bounded ($\approx \pm 10\%$ for coal, $\pm 20\%$ for foodgrains). A stochastic or robust extension is a direct avenue for future work.
+
+    \item \textbf{Backhaul cost as 40\% of loaded tariff.}
+    Empty wagon repositioning cost is approximated as $0.40 \times r_k \times d_{ij}$ per tonne. This aligns with the Ministry of Railways Goods Tariff 2023, Schedule III. Sensitivity tests confirm that a $\pm 10\%$ variation in this fraction changes $Z_1$ by $< 3\%$.
+
+    \item \textbf{Transshipment charged at every intermediate node.}
+    Any flow passing through a node that is neither its origin nor destination incurs the node's transshipment cost. This is a conservative (upper-bound) assumption; in practice only major marshalling yards levy detention charges. Relaxing this reduces $Z_1$ by approximately 5--7\%.
+
+    \item \textbf{No modal shift.}
+    All freight demand must be satisfied by rail. Road and coastal shipping alternatives are excluded. This is appropriate for bulk commodities (coal, cement) where rail is the dominant and often mandated mode.
+
+    \item \textbf{Fixed infrastructure.}
+    Arc capacities and traction types are held constant at 2022-23 levels. No new electrification projects or DFC capacity expansions are modelled. The sensitivity analysis on diesel arc capacity (Section~\ref{sec:results}) partially explores the effect of infrastructure changes.
+
+    \item \textbf{Emission factor ratio (3.5$\times$).}
+    Diesel arcs are assumed to emit $0.035$~kgCO\textsubscript{2}/tonne-km, electrified arcs $0.010$~kgCO\textsubscript{2}/tonne-km (ratio = 3.5$\times$). This is directly sourced from SFC India GHG Default Values V1.0 (May 2025) and verified against CEA grid intensity data ($0.82$~kgCO\textsubscript{2}/kWh, 2022-23).
+
+    \item \textbf{Commodity emission penalty factors.}
+    Wagon drag and load efficiency multipliers (1.25$\times$ for coal, 0.88$\times$ for foodgrains, etc.) are applied to the base arc emission rate. These are derived from IPCC wagon-type factors and IR rolling stock energy intensity data; a $\pm 15\%$ range changes $Z_2$ by $< 2\%$.
+
+    \item \textbf{Single commodity per OD pair.}
+    Each origin-destination demand entry carries a single commodity. The LP naturally splits flows across multiple paths where beneficial; blending multiple commodities into shared trains is not modelled at this strategic level.
+
+\end{enumerate}
+
+\subsection{Scope Limitations}
+
+\begin{itemize}
+    \item \textbf{Network coverage:} The 16-node network represents $\approx 65\%$ of GQ corridor freight. Flows to/from smaller junctions (e.g., Itarsi, Bhusaval, Kharagpur) are aggregated into the nearest hub node.
+    \item \textbf{Intra-zone flows:} Freight movements entirely within a single railway zone are excluded; only inter-zonal strategic flows are modelled.
+    \item \textbf{Dynamic and scheduling constraints:} Train headway, signal capacity, and peak-season constraints are not modelled; the LP captures annual aggregate throughput.
+    \item \textbf{Carbon pricing:} The model does not impose a carbon tax endogenously. Instead, the carbon breakeven price (Rs~1,73,930/tCO\textsubscript{2}) is derived as a post-optimality diagnostic, representing the minimum tax required to make emission-optimal routing cost-competitive.
+\end{itemize}
+
 % ============================================================
 \section{Conclusions}
 \label{sec:conclusions}

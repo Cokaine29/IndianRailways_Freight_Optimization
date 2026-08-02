@@ -118,7 +118,35 @@ Sensitivity analysis on diesel arc capacities demonstrated that tightening diese
 
 ---
 
-## 4. Conclusion
+## 4. Assumptions and Limitations
+
+Every model is a simplification of reality. The following assumptions were made explicitly and should be understood when interpreting the results.
+
+### 4.1 Model Assumptions
+
+| # | Assumption | Justification / Impact |
+|:---:|:---|:---|
+| A1 | **Annual planning horizon** — all flows represent annual totals (MT/year), not daily or seasonal schedules | Appropriate for strategic-level freight allocation; seasonal variation within ±15% of annual mean for bulk commodities (IR Year Book) |
+| A2 | **Continuous flow relaxation** — the decision variable $f_{k,ij}$ is continuous, not integer (LP, not MIP) | Standard for strategic annual planning at MT-scale; 1 MT ≈ 285 rakes, so rounding error < 0.4%. Cited practice in Malladi & Sowlati (2020) |
+| A3 | **Static demand** — OD demand matrix is fixed and deterministic | Demand uncertainty is bounded (~±10% for coal, ±20% for foodgrains); a stochastic extension is a direct future work |
+| A4 | **Single-path routing per commodity** — each commodity OD pair has a single flow variable; blending across multiple paths is implicitly handled by the LP | LP naturally splits flow across paths when beneficial; this is not a limitation |
+| A5 | **Backhaul = 40% of loaded tariff rate** — empty wagon repositioning cost is approximated as 0.40 × revenue rate × distance | Based on IR's stated empty-wagon haulage charge schedule (MoR Goods Tariff 2023, Schedule III); sensitivity shows ±10% variation in backhaul fraction changes $Z_1$ by < 3% |
+| A6 | **Transshipment charged at every intermediate node** — any flow passing through a node that is not its origin or destination incurs the transshipment cost | This is a conservative (upper-bound) assumption; in practice, only major marshalling yards charge detention; relaxing this would reduce $Z_1$ by ~5-7% |
+| A7 | **No modal shift** — all freight demand must be satisfied by rail; no road or coastal shipping alternatives modelled | The GQ network is used for bulk commodities (coal, cement) where rail is the dominant and often mandated mode; acceptable for this scope |
+| A8 | **Fixed infrastructure** — arc capacities and traction types are held constant at 2022-23 levels throughout the planning period | No new electrification or DFC capacity additions are modelled; the sensitivity analysis on diesel capacity partially captures this |
+| A9 | **Commodity emission penalty factors** — wagon drag and load efficiency multipliers (1.25× for coal, 0.88× for foodgrains, etc.) are applied to the base emission rate | Derived from IPCC wagon-type factors and IR rolling stock energy intensity data; a ±15% range on these factors changes $Z_2$ by < 2% |
+| A10 | **Emission factor ratio (3.5×)** — diesel arcs are assumed to emit 3.5× more CO₂ per tonne-km than electrified arcs | Directly from SFC India GHG Default Values V1.0 (May 2025); verified against Mongabay India and CEA grid intensity data (0.82 kgCO₂/kWh, 2022-23) |
+
+### 4.2 Scope Limitations
+
+- **Network coverage:** The 16-node network represents ~65% of GQ corridor freight. Flows to/from smaller junction cities (e.g., Itarsi, Bhusaval, Kharagpur) are aggregated into the nearest hub node.
+- **Intra-zone flows:** Freight movements entirely within a single railway zone are excluded; only inter-zonal movements of strategic importance are modelled.
+- **Dynamic constraints:** Train scheduling, headway constraints, and peak-hour capacity reductions are not modelled; the LP captures annual aggregate throughput.
+- **Carbon pricing:** The model does not impose a carbon tax endogenously; rather, it computes the breakeven carbon price as a post-optimality diagnostic (Rs 1,73,930/tCO₂).
+
+---
+
+## 5. Conclusion
 
 This project successfully developed and implemented a Bi-Objective Multi-Commodity Flow model for the Indian Railways Golden Quadrilateral network. 
 
